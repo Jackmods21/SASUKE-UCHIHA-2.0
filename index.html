@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sasuke Uchiha Pro Version - History Table</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0b0c10;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main Container */
+        .container {
+            background: #1f2833;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 5px solid #66fcf1; /* Thicker neon border */
+        }
+
+        /* Glowing Effect */
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 20px;
+            background: linear-gradient(60deg, transparent, rgba(102, 252, 241, 0.5), transparent);
+            animation: glow 3s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes glow {
+            0% {
+                filter: blur(5px);
+            }
+            100% {
+                filter: blur(8px);
+            }
+        }
+
+        /* Header Styling */
+        .header {
+            font-size: 2em;
+            font-weight: bold;
+            color: #66fcf1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 4px solid #45a29e; /* Thicker underline */
+            padding-bottom: 10px;
+        }
+
+        /* Period, Timer, and Result Styling */
+        .period, .timer, .result-box {
+            font-size: 1.2em;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 12px;
+            background: #0b0c10;
+            color: #c5c6c7;
+            border: 3px solid #45a29e; /* Thicker border */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .timer {
+            color: #ff6347;
+            font-weight: bold;
+        }
+
+        .result-box {
+            color: #66fcf1;
+            display: none; /* Initially hidden */
+            font-weight: bold;
+        }
+
+        /* Get Result Button */
+        .get-result-btn {
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 12px 30px;
+            background: linear-gradient(145deg, #45a29e, #66fcf1);
+            color: #1f2833;
+            border: 3px solid #45a29e; /* Thicker border */
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 0 15px rgba(102, 252, 241, 0.8);
+        }
+
+        .get-result-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(102, 252, 241, 1);
+        }
+
+        /* History Table Styling */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .history-table th, .history-table td {
+            padding: 12px;
+            text-align: center;
+            font-size: 1em;
+            color: #c5c6c7;
+            border: 3px solid #45a29e; /* Thick, sharp border for table cells */
+        }
+
+        .history-table th {
+            background: #1f2833;
+            color: #66fcf1;
+            text-transform: uppercase;
+        }
+
+        .history-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header {
+                font-size: 1.8em;
+            }
+
+            .get-result-btn {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">Sasuke Uchiha Pro Version</div>
+
+        <!-- Period Number Display -->
+        <div class="period" id="periodNumber">Period Number: 20241106100010001</div>
+
+        <!-- Timer Display -->
+        <div class="timer" id="timerDisplay">Timer: 00 : 30</div>
+
+        <!-- Result Display -->
+        <div class="result-box" id="resultBox">Result: SMALL</div>
+
+        <!-- Get Result Button -->
+        <button class="get-result-btn" id="getResultBtn">Get Result</button>
+
+        <!-- History Table -->
+        <table class="history-table" id="historyTable">
+            <thead>
+                <tr>
+                    <th>Period Number</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to generate random result for "BIG" or "SMALL"
+        function getRandomResult() {
+            const results = ["BIG", "SMALL"];
+            return results[Math.floor(Math.random() * results.length)];
+        }
+
+        // Store results by period number
+        const periodResults = {};
+
+        function updatePeriodNumber() {
+            const now = new Date();
+            const year = now.getUTCFullYear();
+            const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(now.getUTCDate()).padStart(2, '0');
+            const totalMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+            const periodNumber = `${year}${month}${day}1000${10001 + totalMinutes}`;
+            document.getElementById("periodNumber").textContent = "Period Number: " + periodNumber;
+
+            return periodNumber;
+        }
+
+        function updateTimerAndResult() {
+            const now = new Date();
+            const seconds = now.getUTCSeconds();
+            const remainingSeconds = 60 - seconds;
+            document.getElementById("timerDisplay").textContent = "Timer: 00 : " + String(remainingSeconds).padStart(2, '0');
+        }
+
+        function addHistoryEntry(periodNumber, result) {
+            const historyBody = document.getElementById("historyBody");
+            const newRow = document.createElement("tr");
+
+            const periodCell = document.createElement("td");
+            periodCell.textContent = periodNumber;
+            newRow.appendChild(periodCell);
+
+            const resultCell = document.createElement("td");
+            resultCell.textContent = result;
+            newRow.appendChild(resultCell);
+
+            historyBody.insertBefore(newRow, historyBody.firstChild);
+        }
+
+        // Attach event listener to "GET RESULT" button
+        document.getElementById("getResultBtn").addEventListener("click", function() {
+            const periodNumber = updatePeriodNumber();
+
+            // Only get a result if no result is assigned yet for this period number
+            if (!periodResults[periodNumber]) {
+                const result = getRandomResult();
+                periodResults[periodNumber] = result;
+                document.getElementById("resultBox").textContent = "Result: " + result;
+
+                // Show result box when result is available
+                document.getElementById("resultBox").style.display = "block";
+
+                addHistoryEntry(periodNumber, result);
+            }
+        });
+
+        setInterval(updateTimerAndResult, 1000);
+    </script>
+
+</body>
+</html>
