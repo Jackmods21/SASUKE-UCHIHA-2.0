@@ -3,253 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prediction</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
-
+    <title>Sasuke Uchiha 2.0</title>
     <style>
-        /* Basic styling for container, button, and table with custom fonts */
+        /* General styling */
         body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #333;
-            color: #fff;
-            font-family: 'Roboto', sans-serif;
             margin: 0;
-            overflow: hidden;
         }
 
-        /* Smoky background effect */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.8));
-            z-index: -2;
-            opacity: 0.5;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: url('https://www.transparenttextures.com/patterns/smoke.png') repeat;
-            opacity: 0.1;
-            animation: smoke 20s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes smoke {
-            from { transform: translate(0, 0) scale(1.5); }
-            to { transform: translate(50px, 50px) scale(1.5); }
-        }
-
+        /* Container styling */
         .container {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.8);
+            width: 420px;
             padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
-            position: relative;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            animation: blue-border-blink 5s linear infinite;
+            background: #222244;
+            border-radius: 15px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
 
-        /* Blinking Title Text */
-        .blinking-title {
-            font-size: 2em;
-            font-weight: bold;
-            color: #FF4081;
-            margin-bottom: 20px;
-            animation: blink 1s infinite;
-            font-family: 'Roboto Condensed', sans-serif;
+        /* Header styling */
+        h1 {
+            color: #ff0000;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        /* Box styling */
+        .box {
+            margin: 15px 0;
+            padding: 15px;
+            background: linear-gradient(145deg, #2b2b47, #1a1a2b);
+            border-radius: 12px;
+            border: 3px solid #0000ff;
+            color: #ff0000;
         }
 
-        .bordered-box, .result-box, .history-table th, .history-table td {
+        /* Period and result text */
+        #periodNumber, #currentResult {
             font-size: 1.2em;
-            color: #1DE9B6;
-            margin: 10px 0;
-            padding: 10px;
-            border: 3px solid;
-            border-radius: 5px;
-            animation: blue-border-blink 5s linear infinite;
-            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: bold;
         }
 
-        /* Blue blinking and moving effect */
-        @keyframes blue-border-blink {
-            0%, 100% { border-color: rgba(0, 123, 255, 0.8); box-shadow: 0 0 8px rgba(0, 123, 255, 0.6); }
-            50% { border-color: rgba(0, 255, 255, 1); box-shadow: 0 0 12px rgba(0, 123, 255, 1); }
+        /* Timer text */
+        #timer {
+            font-size: 1.3em;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
         }
 
-        .result-box {
-            font-size: 1.5em;
-            color: #1DE9B6;
-            margin-top: 15px;
+        /* History box with smoke effect */
+        .history-box {
+            background: #1a1a2e;
+            border: 4px solid #0000ff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            overflow-y: auto;
+            box-shadow: 0 0 15px rgba(0, 0, 255, 0.6), 0 0 30px rgba(0, 0, 255, 0.3); /* Smoke effect */
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #ff0000;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 3px solid #0000ff;
+            padding: 8px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 255, 0.5); /* Smoke effect on cell borders */
+        }
+
+        /* Button styling */
         .get-result-btn {
             padding: 10px 20px;
-            background: #FF4081;
-            color: #FFFFFF;
-            font-size: 1em;
+            background-color: #ff0000;
+            color: #ffffff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            transition: background 0.3s;
-        }
-
-        .get-result-btn:hover {
-            background: #F50057;
-        }
-
-        .history-table {
-            width: 100%;
+            font-weight: bold;
             margin-top: 20px;
-            border-collapse: collapse;
-            font-family: 'Roboto Condensed', sans-serif;
         }
 
-        .history-table th, .history-table td {
-            padding: 10px;
-            color: #fff;
-        }
-
-        .history-table th {
-            background-color: #444;
-        }
-
-        .history-table tr:nth-child(even) {
-            background-color: #555;
-        }
-
-        /* Popup Message */
+        /* Popup styling */
         .popup-message {
             display: none;
-            font-size: 1.2em;
-            color: #ff5722;
-            margin-top: 20px;
-            border-top: 2px solid #ff5722;
-            padding-top: 10px;
-            font-family: 'Roboto', sans-serif;
+            font-size: 1.1em;
+            color: #ffcc00;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Blinking Title Text -->
-    <div class="blinking-title">SASUKE UCHIHA 2.0</div>
+    <h1>SASUKE UCHIHA 2.0</h1>
 
-    <!-- Period Number Display with Blue Border Animation -->
-    <div class="bordered-box" id="periodNumber">Period Number: Loading...</div>
+    <div class="box">
+        <div>Period Number</div>
+        <div id="periodNumber">Loading...</div>
+    </div>
 
-    <!-- Timer Display with Blue Border Animation -->
-    <div class="bordered-box" id="timer">Time Remaining: 00:00</div>
+    <div class="box">
+        <div>Current Result</div>
+        <div id="currentResult">Waiting...</div>
+    </div>
 
-    <!-- Result Box with Blue Border Animation -->
-    <div class="result-box" id="resultBox">Result: Waiting...</div>
+    <div class="box">
+        <div>Timer</div>
+        <div id="timer">01:00</div>
+    </div>
 
-    <!-- Get Result Button -->
     <button class="get-result-btn" id="getResultBtn">GET RESULT</button>
+    <div class="popup-message" id="popupMessage">Please wait for the next period number</div>
 
-    <!-- History Table -->
-    <table class="history-table">
-        <thead>
-            <tr>
-                <th>Period Number</th>
-                <th>Result</th>
-            </tr>
-        </thead>
-        <tbody id="historyBody">
-        </tbody>
-    </table>
-
-    <!-- Popup Message for Waiting -->
-    <div class="popup-message" id="popupMessage"> Please Wait for result period number</div>
+    <div class="history-box">
+        <div>History</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Period Number</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody id="history"></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    const predictions = ["SMALL", "SMALL", "BIG", "SMALL", "SMALL", "BIG", "SMALL", "BIG", "BIG", "SMALL", 
-                         "BIG", "BIG", "SMALL", "SMALL", "BIG", "SMALL", "SMALL", "BIG", "BIG", "SMALL", 
-                         "BIG", "BIG", "SMALL", "BIG", "SMALL", "SMALL"];
-    let currentPredictionIndex = 0;
+    const periodNumberElement = document.getElementById('periodNumber');
+    const timerElement = document.getElementById('timer');
+    const currentResultElement = document.getElementById('currentResult');
+    const historyElement = document.getElementById('history');
+    const getResultBtn = document.getElementById('getResultBtn');
+    const popupMessage = document.getElementById('popupMessage');
+
+    const results = [
+        'BIG', 'RED', 'SMALL', 'SMALL', 'SMALL', 'BIG', 'GREEN', 'BIG', 'BIG', 'SMALL',
+        'RED', 'BIG', 'SMALL', 'BIG', 'GREEN', 'RED', 'SMALL', 'RED', 'GREEN', 'BIG'
+    ];
+
+    let currentResultIndex = -1;
     let lastPeriod = null;
 
-    function updatePeriodAndTimer() {
+    // Function to update period and result
+    function updatePeriodAndResult() {
         const now = new Date();
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(now.getUTCDate()).padStart(2, '0');
+        const utcYear = now.getUTCFullYear();
+        const utcMonth = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const utcDay = String(now.getUTCDate()).padStart(2, '0');
         const totalMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
-        const periodNumber = `${year}${month}${day}1000${10001 + totalMinutes}`;
-        
-        // Display the period number
-        document.getElementById("periodNumber").textContent = "Period Number: " + periodNumber;
+        const periodNumber = 10001 + totalMinutes;
+        const periodString = `${utcYear}${utcMonth}${utcDay}1000${periodNumber}`;
 
-        // Timer countdown
-        const seconds = now.getUTCSeconds();
-        const remainingSeconds = 60 - seconds;
-        document.getElementById("timer").textContent = `Time Remaining: 00:${String(remainingSeconds).padStart(2, '0')}`;
-
-        return periodNumber;
+        periodNumberElement.textContent = periodString;
+        return periodString;
     }
 
-    setInterval(updatePeriodAndTimer, 1000);
-
+    // Function to handle the "Get Result" button click
     function displayResult() {
-        const periodNumber = updatePeriodAndTimer();
+        const periodNumber = updatePeriodAndResult();
 
-        // Check if the button was clicked twice in the same period
-        if (lastPeriod === periodNumber) {
-            document.getElementById("popupMessage").style.display = "block"; // Show popup message
+        // Check if clicked within the same period
+        if (periodNumber === lastPeriod) {
+            popupMessage.style.display = 'block';
             return;
         }
 
-        // Display the result and update history
-        const result = predictions[currentPredictionIndex];
-        currentPredictionIndex = (currentPredictionIndex + 1) % predictions.length;
-
-        document.getElementById("resultBox").textContent = "Result: " + result;
-        addHistoryEntry(periodNumber, result);
-
+        // Hide popup, update result, and add to history
+        popupMessage.style.display = 'none';
         lastPeriod = periodNumber;
-        document.getElementById("popupMessage").style.display = "none"; // Hide popup message
-    }
 
-    function addHistoryEntry(periodNumber, result) {
-        const historyBody = document.getElementById("historyBody");
-        const row = document.createElement("tr");
+        // Cycle through the results
+        currentResultIndex = (currentResultIndex + 1) % results.length;
+        const result = results[currentResultIndex];
+        currentResultElement.textContent = result;
 
-        const periodCell = document.createElement("td");
+        // Add to history table
+        const row = document.createElement('tr');
+        const periodCell = document.createElement('td');
+        const resultCell = document.createElement('td');
         periodCell.textContent = periodNumber;
-        row.appendChild(periodCell);
-
-        const resultCell = document.createElement("td");
         resultCell.textContent = result;
+        row.appendChild(periodCell);
         row.appendChild(resultCell);
-
-        historyBody.appendChild(row);
+        historyElement.prepend(row);
     }
 
-    // Add event listener to Get Result button
-    document.getElementById("getResultBtn").addEventListener("click", displayResult);
+    // Timer countdown
+    function startTimer() {
+        setInterval(() => {
+            const now = new Date();
+            const remainingSeconds = 60 - (now.getUTCSeconds() % 60);
+            timerElement.textContent = `00:${String(remainingSeconds).padStart(2, '0')}`;
+
+            // Update period and result every 60 seconds
+            if (remainingSeconds === 60) {
+                updatePeriodAndResult();
+            }
+        }, 1000);
+    }
+
+    // Event listener for the "Get Result" button
+    getResultBtn.addEventListener('click', displayResult);
+    window.onload = startTimer;
 </script>
 
 </body>
