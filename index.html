@@ -3,222 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sasuke Uchiha 2.0</title>
+    <title>Prediction Timer</title>
     <style>
-        /* General styling */
         body {
             font-family: Arial, sans-serif;
-            background-color: #1a1a2e;
-            color: #ffffff;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
+            background: #000; /* Dark background */
+            color: #fff;
         }
 
-        /* Container styling */
         .container {
-            width: 420px;
+            position: relative;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
             padding: 20px;
-            background: #222244;
-            border-radius: 15px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
-            text-align: center;
+            background-color: rgba(20, 20, 20, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
         }
 
-        /* Header styling */
-        h1 {
-            color: #ff0000;
-            font-size: 1.8em;
-            margin-bottom: 25px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-        }
-
-        /* Box styling */
-        .box {
-            margin: 15px 0;
+        /* Neon text and border effect */
+        .neon-border {
             padding: 15px;
-            background: linear-gradient(145deg, #2b2b47, #1a1a2b);
-            border-radius: 12px;
-            border: 3px solid #0000ff;
-            color: #ff0000;
-        }
-
-        /* Period and result text */
-        #periodNumber, #currentResult {
-            font-size: 1.2em;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 3px solid #ff007f; /* Neon border */
+            box-shadow: 0 0 15px #ff007f, 0 0 25px #ff007f, 0 0 35px #ff007f, 0 0 45px #ff007f;
+            color: white;
             font-weight: bold;
+            background-color: rgba(25, 25, 25, 0.9);
         }
 
-        /* Timer text */
-        #timer {
-            font-size: 1.3em;
+        /* Title with neon effect */
+        .title {
+            font-size: 2.5rem;
+            color: #ff007f; /* Neon pink */
             font-weight: bold;
-            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+            margin-bottom: 20px;
+            animation: glow 1.5s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
         }
 
-        /* History box with smoke effect */
-        .history-box {
-            background: #1a1a2e;
-            border: 4px solid #0000ff;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
+        /* Upper bottom text styling */
+        .upper-bottom-text {
+            font-size: 1.5rem; /* Adjust font size as needed */
+            color: #ff007f; /* Neon pink */
+            margin: 20px 0; /* Space above and below */
+            animation: glow 1.5s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
+        }
+
+        /* History box styling */
+        .history {
+            width: 92%; /* Adjusted width to 92% */
+            max-height: 150px;
             overflow-y: auto;
-            box-shadow: 0 0 15px rgba(0, 0, 255, 0.6), 0 0 30px rgba(0, 0, 255, 0.3); /* Smoke effect */
+            border: 3px solid #ff007f;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: rgba(20, 20, 20, 0.9);
+            box-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            color: #ff0000;
-            margin-top: 10px;
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            margin: 5px 0;
+            color: #fff;
+            background-color: rgba(40, 40, 40, 0.8);
+            border-radius: 4px;
         }
 
-        th, td {
-            border: 3px solid #0000ff;
-            padding: 8px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 255, 0.5); /* Smoke effect on cell borders */
-        }
-
-        /* Button styling */
-        .get-result-btn {
-            padding: 10px 20px;
-            background-color: #ff0000;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
+        /* Neon effect for footer text */
+        .footer-text {
+            font-size: 1.2rem;
+            color: #ff007f; /* Neon pink */
             margin-top: 20px;
+            animation: glow 1.5s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
         }
 
-        /* Popup styling */
-        .popup-message {
-            display: none;
-            font-size: 1.1em;
-            color: #ffcc00;
-            margin-top: 15px;
+        /* Neon particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
         }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #ff007f, transparent);
+            border-radius: 50%;
+            animation: float 5s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        /* Particle floating animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(-30px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Particle movement animation */
+        @keyframes move {
+            from {
+                transform: translateY(0) translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100vh) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        /* Title neon glow animation */
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
+            }
+            to {
+                text-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f, 0 0 40px #ff007f;
+            }
+        }
+
     </style>
 </head>
 <body>
+    <div class="particles"></div>
 
-<div class="container">
-    <h1>SASUKE UCHIHA 2.0</h1>
+    <div class="container">
+        <div class="title">JACK MODS </div>
 
-    <div class="box">
-        <div>Period Number</div>
-        <div id="periodNumber">Loading...</div>
+        <div class="upper-bottom-text">1 MIN WINGO</div> <!-- New upper bottom text -->
+
+        <div class="neon-border">Period Number: <span id="periodNumber">Loading...</span></div>
+        <div class="neon-border">Timer: <span id="timer">00 : 00</span></div>
+        <div class="neon-border">Result: <span id="result">Waiting...</span></div>
+
+        <div class="history">
+            <strong>History</strong>
+            <div id="historyList"></div>
+        </div>
+
+        <!-- Footer Text -->
+        <div class="footer-text">PRESENT BY JACK MODS</div>
     </div>
 
-    <div class="box">
-        <div>Current Result</div>
-        <div id="currentResult">Waiting...</div>
-    </div>
+    <script>
+        const periodNumber = document.getElementById("periodNumber");
+        const timerDisplay = document.getElementById("timer");
+        const resultDisplay = document.getElementById("result");
+        const historyList = document.getElementById("historyList");
 
-    <div class="box">
-        <div>Timer</div>
-        <div id="timer">01:00</div>
-    </div>
+        const resultsArray = ["SMALL", "SMALL", "BIG", "SMALL", "SMALL", "BIG", "BIG", "BIG", "BIG", "SMALL", "BIG", "SMALL", "BIG", "SMALL", "SMALL", "SMALL"];
+        let lastPeriod = null;
 
-    <button class="get-result-btn" id="getResultBtn">GET RESULT</button>
-    <div class="popup-message" id="popupMessage">Please wait for the next period number</div>
+        // Function to update period and display result
+        function updatePeriodAndResult() {
+            const now = new Date();
+            const totalMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+            const period = 10001 + totalMinutes;
+            const newPeriodNumber = `${now.toISOString().slice(0, 10).replace(/-/g, '')}1000${period}`;
 
-    <div class="history-box">
-        <div>History</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Period Number</th>
-                    <th>Result</th>
-                </tr>
-            </thead>
-            <tbody id="history"></tbody>
-        </table>
-    </div>
-</div>
+            if (newPeriodNumber !== lastPeriod) {
+                lastPeriod = newPeriodNumber;
+                periodNumber.textContent = newPeriodNumber;
 
-<script>
-    const periodNumberElement = document.getElementById('periodNumber');
-    const timerElement = document.getElementById('timer');
-    const currentResultElement = document.getElementById('currentResult');
-    const historyElement = document.getElementById('history');
-    const getResultBtn = document.getElementById('getResultBtn');
-    const popupMessage = document.getElementById('popupMessage');
+                // Randomly select a result for each new period
+                const randomIndex = Math.floor(Math.random() * resultsArray.length);
+                const result = resultsArray[randomIndex];
+                resultDisplay.textContent = result;
 
-    const results = [
-        'BIG', 'RED', 'SMALL', 'SMALL', 'SMALL', 'BIG', 'GREEN', 'BIG', 'BIG', 'SMALL',
-        'RED', 'BIG', 'SMALL', 'BIG', 'GREEN', 'RED', 'SMALL', 'RED', 'GREEN', 'BIG'
-    ];
-
-    let currentResultIndex = -1;
-    let lastPeriod = null;
-
-    // Function to update period and result
-    function updatePeriodAndResult() {
-        const now = new Date();
-        const utcYear = now.getUTCFullYear();
-        const utcMonth = String(now.getUTCMonth() + 1).padStart(2, '0');
-        const utcDay = String(now.getUTCDate()).padStart(2, '0');
-        const totalMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
-        const periodNumber = 10001 + totalMinutes;
-        const periodString = `${utcYear}${utcMonth}${utcDay}1000${periodNumber}`;
-
-        periodNumberElement.textContent = periodString;
-        return periodString;
-    }
-
-    // Function to handle the "Get Result" button click
-    function displayResult() {
-        const periodNumber = updatePeriodAndResult();
-
-        // Check if clicked within the same period
-        if (periodNumber === lastPeriod) {
-            popupMessage.style.display = 'block';
-            return;
+                // Add result to history
+                const historyItem = document.createElement("div");
+                historyItem.className = "history-item";
+                historyItem.innerHTML = `<span>Period: ${newPeriodNumber}</span><span>Result: ${result}</span>`;
+                historyList.prepend(historyItem);
+            }
         }
 
-        // Hide popup, update result, and add to history
-        popupMessage.style.display = 'none';
-        lastPeriod = periodNumber;
-
-        // Cycle through the results
-        currentResultIndex = (currentResultIndex + 1) % results.length;
-        const result = results[currentResultIndex];
-        currentResultElement.textContent = result;
-
-        // Add to history table
-        const row = document.createElement('tr');
-        const periodCell = document.createElement('td');
-        const resultCell = document.createElement('td');
-        periodCell.textContent = periodNumber;
-        resultCell.textContent = result;
-        row.appendChild(periodCell);
-        row.appendChild(resultCell);
-        historyElement.prepend(row);
-    }
-
-    // Timer countdown
-    function startTimer() {
-        setInterval(() => {
+        // Timer update function
+        function updateTimer() {
             const now = new Date();
-            const remainingSeconds = 60 - (now.getUTCSeconds() % 60);
-            timerElement.textContent = `00:${String(remainingSeconds).padStart(2, '0')}`;
+            const seconds = now.getUTCSeconds();
+            const remainingSeconds = 60 - seconds;
+            timerDisplay.textContent = `00 : ${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
+        }
 
-            // Update period and result every 60 seconds
-            if (remainingSeconds === 60) {
+        // Run update every second
+        setInterval(() => {
+            updateTimer();
+            if (new Date().getUTCSeconds() === 0) {
                 updatePeriodAndResult();
             }
         }, 1000);
-    }
 
-    // Event listener for the "Get Result" button
-    getResultBtn.addEventListener('click', displayResult);
-    window.onload = startTimer;
-</script>
+        // Generate random particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.top = `${Math.random() * 100}vh`;
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random duration for each particle
+                particlesContainer.appendChild(particle);
+            }
+        }
 
+        createParticles();
+    </script>
 </body>
 </html>
