@@ -1,0 +1,381 @@
+<!-- FULL CODE STARTS HERE -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><i class="fas fa-bullseye"></i> Live Predictor Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --box-gradient: linear-gradient(135deg, #b3e5fc, #0288d1);
+      --primary-color: #0288d1;
+      --secondary-color: #00bcd4;
+      --tertiary-color: #26c6da;
+    }
+
+    * {
+      margin: 0; padding: 0; font-family: 'El Messiri', sans-serif; box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(to bottom, #ffffff, #e0f7ff);
+      color: #111; padding: 20px;
+      transition: background 1s ease;
+    }
+
+    svg.text-logo {
+      display: block;
+      margin: 0 auto 20px auto;
+    }
+
+    svg text {
+      font-family: 'El Messiri', sans-serif;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      text-transform: uppercase;
+      animation: stroke 5s infinite alternate;
+      stroke-width: 1;
+      stroke: var(--primary-color);
+      font-size: 40px;
+      fill: rgba(255, 255, 255, 0);
+    }
+
+    @keyframes stroke {
+      0% { fill: rgba(255, 255, 255, 0); stroke: var(--primary-color); stroke-dashoffset: 25%; stroke-dasharray: 0 50%; stroke-width: 2; }
+      70% { fill: rgba(255, 255, 255, 0); stroke: var(--secondary-color); }
+      80% { fill: rgba(255, 255, 255, 0); stroke: var(--tertiary-color); stroke-width: 3; }
+      100% { fill: #FFFFFF; stroke: rgba(0, 0, 0, 0); stroke-dashoffset: -25%; stroke-dasharray: 50% 0; stroke-width: 0; }
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 28px;
+    }
+    .section h2 {
+      font-size: 20px; margin-bottom: 18px;
+      text-align: center;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .stats, .prediction {
+      display: flex; flex-wrap: wrap; gap: 18px;
+    }
+    .box {
+      background: var(--box-gradient);
+      padding: 16px; border-radius: 14px; flex: 1;
+      text-align: center; min-width: 130px;
+      border: 1px solid #aaa; position: relative;
+      overflow: hidden; color: #fff;
+    }
+    .label { font-size: 13px; color: #f0f0f0; }
+    .value {
+      font-size: 22px; font-weight: 600; margin-top: 6px;
+      animation: pulse 2s infinite;
+    }
+    .confidence-label {
+      font-size: 13px; color: #f9f9f9; margin-top: 6px;
+    }
+    .confidence {
+      font-size: 16px; font-weight: bold; margin-top: 2px; color: #fff;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .history {
+      max-height: 360px; overflow-y: auto;
+    }
+    .history-item {
+      background: #f0faff; padding: 12px 16px; border-radius: 12px;
+      margin-bottom: 8px; font-size: 14px;
+      border-left: 4px solid; animation: fadeIn 0.5s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .history-item .text-content {
+      flex-grow: 1;
+    }
+    .history-item .period { font-weight: bold; margin-bottom: 4px; color: #222; }
+    .history-item .line { margin: 2px 0; }
+    .green  { color: #2e7d32; font-weight: 600; }
+    .red    { color: #c62828; font-weight: 600; }
+    .delete-btn {
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      padding: 6px;
+      margin-left: 10px;
+    }
+    .delete-btn svg {
+      width: 18px; height: 18px;
+      fill: #888;
+      transition: fill 0.3s ease;
+    }
+    .delete-btn:hover svg {
+      fill: #c62828;
+    }
+    .no-history {
+      text-align: center; color: #888; font-style: italic; margin-top: 12px;
+    }
+    footer {
+      text-align: center; font-size: 12px; color: #666; margin-top: 40px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .theme-select {
+      text-align: center; margin-top: 24px;
+    }
+    .theme-select button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      background: #0288d1;
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Animated SVG Title -->
+<svg class="text-logo" width="100%" height="50">
+  <text x="50%" y="50%">SASTA PRIME-AI</text>
+</svg>
+
+<div class="section">
+  <h2><i class="fas fa-chart-bar"></i> Period + Totals</h2>
+  <div class="stats">
+    <div class="box"><div class="label">Current Period</div><div class="value" id="period">--</div></div>
+    <div class="box"><div class="label">Total Predictions</div><div class="value" id="totalBets">0</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><i class="fas fa-tachometer-alt"></i> Winrate & Performance</h2>
+  <div class="stats">
+    <div class="box"><div class="label">Big/Small Wins</div><div class="value green" id="bs_win">0</div></div>
+    <div class="box"><div class="label">Big/Small Losses</div><div class="value red" id="bs_loss">0</div></div>
+    <div class="box"><div class="label">Big/Small Winrate</div><div class="value" id="bs_rate">0%</div></div>
+  </div>
+  <div class="stats" style="margin-top: 12px;">
+    <div class="box"><div class="label">Red/Green Wins</div><div class="value green" id="rg_win">0</div></div>
+    <div class="box"><div class="label">Red/Green Losses</div><div class="value red" id="rg_loss">0</div></div>
+    <div class="box"><div class="label">Red/Green Winrate</div><div class="value" id="rg_rate">0%</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><i class="fas fa-arrow-up"></i> Latest Prediction</h2>
+  <div class="prediction">
+    <div class="box">
+      <div class="label">Big/Small</div>
+      <div class="value" id="bs_result">--</div>
+      <div class="confidence-label">Confidence:</div>
+      <div class="confidence" id="bs_conf">--%</div>
+    </div>
+    <div class="box">
+      <div class="label">Red/Green</div>
+      <div class="value" id="rg_result">--</div>
+      <div class="confidence-label">Confidence:</div>
+      <div class="confidence" id="rg_conf">--%</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><i class="fas fa-history"></i> Prediction History</h2>
+  <div class="history" id="history"><div class="no-history" id="noHistory">PREDICTION NOT FOUND</div></div>
+</div>
+
+<div class="theme-select">
+  <button onclick="changeBackgroundColor()"><i class="fas fa-paint-brush"></i> Background Color</button>
+</div>
+
+<footer>© 2025 Smart Predictor</footer>
+
+<audio id="winSound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
+<audio id="lossSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+
+<script>
+function changeBackgroundColor() {
+  const colors = [
+    ["#ffecd2", "#fbc2eb"],
+    ["#a1c4fd", "#c2e9fb"],
+    ["#667eea", "#764ba2"],
+    ["#89f7fe", "#66a6ff"],
+    ["#fbc2eb", "#a6c1ee"],
+    ["#d4fc79", "#96e6a1"]
+  ];
+  const [bg, box] = colors[Math.floor(Math.random() * colors.length)];
+  document.body.style.background = `linear-gradient(to bottom, ${bg}, ${box})`;
+  document.documentElement.style.setProperty('--box-gradient', `linear-gradient(135deg, ${bg}, ${box})`);
+}
+
+let lastIssue = null, totalBets = 0;
+let bsWins = 0, bsLosses = 0, rgWins = 0, rgLosses = 0;
+let pendingPrediction = null;
+let highConfLossStreak = 0;
+let highConfWinCount = 0;
+let predictionPaused = false;
+
+function playFeedback(win) {
+  const sound = win ? winSound : lossSound;
+  sound.play();
+  if (navigator.vibrate) navigator.vibrate(win ? 200 : [100, 100, 100]);
+}
+
+function updateStats() {
+  document.getElementById("totalBets").textContent = totalBets;
+  document.getElementById("bs_win").textContent = bsWins;
+  document.getElementById("bs_loss").textContent = bsLosses;
+  document.getElementById("rg_win").textContent = rgWins;
+  document.getElementById("rg_loss").textContent = rgLosses;
+
+  const bsRate = (bsWins + bsLosses) ? Math.round((bsWins / (bsWins + bsLosses)) * 100) : 0;
+  const rgRate = (rgWins + rgLosses) ? Math.round((rgWins / (rgWins + rgLosses)) * 100) : 0;
+
+  document.getElementById("bs_rate").textContent = bsRate + "%";
+  document.getElementById("rg_rate").textContent = rgRate + "%";
+}
+
+function getColor(num) {
+  return [1, 3, 7, 9].includes(num) ? "green" : "red";
+}
+
+function getType(num) {
+  return num >= 5 ? "BIG" : "SMALL";
+}
+
+function detectPatternPrediction(numbers) {
+  const rand = () => Math.floor(Math.random() * 16) + 80;
+  if (numbers.length < 3) {
+    return {
+      type: getType(numbers[0] ?? 5),
+      bsConf: rand(),
+      color: getColor(numbers[0] ?? 5),
+      rgConf: rand()
+    };
+  }
+  const bsSeq = numbers.map(getType);
+  const rgSeq = numbers.map(getColor);
+  const lastBS = bsSeq.slice(0, 3);
+  const lastRG = rgSeq.slice(0, 3);
+  return {
+    type: lastBS[0] === lastBS[1] ? (lastBS[2] === lastBS[0] ? (lastBS[0] === "BIG" ? "SMALL" : "BIG") : lastBS[2]) : lastBS[0],
+    bsConf: rand(),
+    color: lastRG[0] === lastRG[1] ? (lastRG[2] === lastRG[0] ? (lastRG[0] === "red" ? "green" : "red") : lastRG[2]) : lastRG[0],
+    rgConf: rand()
+  };
+}
+
+function updatePredictionDisplay(pred) {
+  bs_result.textContent = pred.type;
+  rg_result.textContent = pred.color.toUpperCase();
+  bs_conf.textContent = `${pred.bsConf}%`;
+  rg_conf.textContent = `${pred.rgConf}%`;
+}
+
+function updateHistory(issue, pred, actual) {
+  const bsActual = getType(actual);
+  const rgActual = getColor(actual);
+  const bsWin = pred.type === bsActual;
+  const rgWin = pred.color === rgActual;
+  const item = document.createElement("div");
+  item.className = "history-item";
+  item.style.borderLeftColor = (bsWin && rgWin) ? "#2e7d32" : "#c62828";
+  item.innerHTML = `
+    <div class="text-content">
+      <div class="period">Period: ${issue}</div>
+      <div class="line">Predicted:
+        <span class="${bsWin ? 'green' : 'red'}">${pred.type}</span> -
+        <span class="${rgWin ? 'green' : 'red'}">${pred.color.toUpperCase()}</span>
+      </div>
+      <div class="line">Actual:
+        <span>${actual}</span> -
+        <span class="${bsWin ? 'green' : 'red'}">${bsActual}</span> -
+        <span class="${rgWin ? 'green' : 'red'}">${rgActual.toUpperCase()}</span>
+      </div>
+    </div>
+    <button class="delete-btn" onclick="this.parentElement.remove()">
+      <svg viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3H9zm3 5a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0V9a1 1 0 0 1 1-1z"/></svg>
+    </button>
+  `;
+  if (document.getElementById("noHistory")) document.getElementById("noHistory").remove();
+  historyElem.prepend(item);
+  totalBets++;
+  if (bsWin) bsWins++; else bsLosses++;
+  if (rgWin) rgWins++; else rgLosses++;
+  const highConf = pred.bsConf >= 90 || pred.rgConf >= 90;
+  if (highConf) {
+    if (!bsWin || !rgWin) {
+      highConfLossStreak++;
+      highConfWinCount = 0;
+    } else {
+      highConfLossStreak = 0;
+      highConfWinCount++;
+    }
+    if (highConfLossStreak >= 2) {
+      alert("High confidence prediction failed twice. Please restart mod!");
+      highConfLossStreak = 0;
+    }
+    if (highConfWinCount >= 20) {
+      predictionPaused = true;
+      alert("20 high confidence wins achieved. Prediction will pause for 1 hour.");
+      setTimeout(() => {
+        predictionPaused = false;
+        alert("Prediction resumed after 1 hour pause.");
+      }, 60 * 60 * 1000);
+    }
+  }
+  playFeedback(bsWin && rgWin);
+  if (historyElem.children.length > 30) historyElem.removeChild(historyElem.lastChild);
+  updateStats();
+}
+
+function fetchData() {
+  if (predictionPaused) return;
+  fetch("https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json")
+    .then(r => r.json())
+    .then(data => {
+      const list = data.data.list;
+      const latest = list[0];
+      const actual = parseInt(latest.number);
+      if (latest.issueNumber !== lastIssue) {
+        if (pendingPrediction) {
+          updateHistory(latest.issueNumber, pendingPrediction, actual);
+        }
+        const recent = list.slice(0, 10).map(it => parseInt(it.number));
+        const pred = detectPatternPrediction(recent);
+        pendingPrediction = pred;
+        updatePredictionDisplay(pred);
+        lastIssue = latest.issueNumber;
+      }
+      const currentPeriod = (parseInt(latest.issueNumber.slice(-5)) + 1).toString().padStart(5, '0');
+      document.getElementById("period").innerText = currentPeriod;
+    })
+    .catch(console.error);
+}
+
+const bs_result = document.getElementById("bs_result"),
+      rg_result = document.getElementById("rg_result"),
+      bs_conf = document.getElementById("bs_conf"),
+      rg_conf = document.getElementById("rg_conf"),
+      historyElem = document.getElementById("history"),
+      winSound = document.getElementById("winSound"),
+      lossSound = document.getElementById("lossSound");
+
+updateStats();
+fetchData();
+setInterval(fetchData, 5000);
+</script>
+</body>
+</html>
+<!-- FULL CODE ENDS HERE -->
